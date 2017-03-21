@@ -97,7 +97,7 @@ def train(run=0):
     # Callbacks.
     early_stopping = EarlyStopping(monitor='val_loss', patience=2)
 
-    checkpoint = ModelCheckpoint('weights/best'+str(run)+'.h5',save_best_only=True, save_weights_only=True)
+    checkpoint = ModelCheckpoint('best'+str(run)+'.h5',save_best_only=True, save_weights_only=True)
 
     # Training
     model.fit(x_train, y_train,
@@ -124,13 +124,14 @@ def evaluate():
     y_train = keras.utils.np_utils.to_categorical(y_train, num_classes)
     y_test = keras.utils.np_utils.to_categorical(y_test, num_classes)
 
+    row, col, pixel = x_train.shape[1:]
 
-    model = create_model()
-    files = os.listdir('weights')
+    model = create_model(row, col, pixel)
+    files = os.listdir('.')
 
     for f in files:
         if '.h5' in f:
-            model.load_weights(os.path.join('weights', f))
+            model.load_weights(f)
             scores = model.evaluate(x_test, y_test, verbose=0)
             print('Test loss:', scores[0])
             print('Test accuracy:', scores[1])
