@@ -28,7 +28,6 @@ layer encodes then these 28 column vectors of shape (28, 128) to a image vector
 representing the whole image. A final Dense layer is added for prediction.
 
 """
-from __future__ import print_function
 
 import os
 import keras
@@ -39,10 +38,10 @@ from keras.layers import Input, Dense, TimeDistributed
 from keras.layers import LSTM
 
 # General parameters.
-batch_size = 32
+batch_size = 128
 num_classes = 10
 
-def create_model():
+def create_model(row, col, pixel):
 
     # Embedding dimensions.
     row_hidden = 49
@@ -89,7 +88,7 @@ def train(run=0):
 
     row, col, pixel = x_train.shape[1:]
 
-    model = create_model()
+    model = create_model(row, col, pixel)
 
     model.compile(loss='categorical_crossentropy',
                 optimizer='rmsprop',
@@ -125,14 +124,15 @@ def evaluate():
     y_train = keras.utils.np_utils.to_categorical(y_train, num_classes)
     y_test = keras.utils.np_utils.to_categorical(y_test, num_classes)
 
-    files = os.listdir('weights')
 
     model = create_model()
+    files = os.listdir('weights')
 
     for f in files:
         if '.h5' in f:
-            files.remove(f)
             model.load_weights(os.path.join('weights', f))
             scores = model.evaluate(x_test, y_test, verbose=0)
             print('Test loss:', scores[0])
             print('Test accuracy:', scores[1])
+
+train()
